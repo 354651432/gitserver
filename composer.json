@@ -1,0 +1,11 @@
+{
+    "name": "six/git-server",
+    "description": "git server base on laravel",
+    "authors": [
+        {
+            "name": "six",
+            "email": "354651432@qq.com"
+        }
+    ],
+    "require": {}
+}
