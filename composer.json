@@ -9,5 +9,17 @@
     ],
     "require": {
         "git": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Six\\GitServer\\": "packages/six/git-server/src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Six\\GitServer\\GitServerProvider"
+            ]
+        }
     }
 }
