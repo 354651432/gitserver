@@ -2,7 +2,7 @@
 > mysql http base authorized server
 
 ## install guide
-0. install `composer install six/gitserver`
+0. install `composer install six/git-server`
 0. initialize table `php artisan git:user init`
 0. add a user `php artisan git:user add tata@dr.h:123`
 0. add a repos `php artisan git:server app1`
