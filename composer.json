@@ -8,7 +8,6 @@
         }
     ],
     "require": {
-        // "git": "*"
     },
     "autoload": {
         "psr-4": {
