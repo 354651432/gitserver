@@ -27,6 +27,9 @@ class GitController extends Controller
      */
     public function init($name)
     {
+        if (!file_exists($this->gitRoot)) {
+            mkdir($this->gitRoot, 0777, true);
+        }
         $repo_path = $this->gitRoot . '/' . $name . ".git";
         $cmd = "git init --bare {$repo_path}";
 
