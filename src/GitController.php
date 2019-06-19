@@ -6,11 +6,17 @@ use Illuminate\Routing\Controller;
 
 class GitController extends Controller
 {
+
+    /**
+     * @var string
+     */
+    protected $git = "git";
+
     /**
      * base path
      * @var string
      */
-    private $gitRoot;
+    protected $gitRoot;
 
     /**
      * GitController constructor.
@@ -18,6 +24,7 @@ class GitController extends Controller
     public function __construct()
     {
         $this->gitRoot = config("git.basepath", storage_path("repos"));
+        $this->git = config("git.git_exe", "git");
     }
 
     /**
@@ -31,7 +38,7 @@ class GitController extends Controller
             mkdir($this->gitRoot, 0777, true);
         }
         $repo_path = $this->gitRoot . '/' . $name . ".git";
-        $cmd = "git init --bare {$repo_path}";
+        $cmd = "{$this->git} init --bare {$repo_path}";
 
         return self::procExec($cmd);
     }
@@ -50,7 +57,7 @@ class GitController extends Controller
             self::updateServerInfo($repo_path);
         }
 
-        $cmd = "git $service --stateless-rpc --advertise-refs $repo_path";
+        $cmd = "$this->git $service --stateless-rpc --advertise-refs $repo_path";
         $out = shell_exec($cmd);
         $res = self::packetWrite("# service=git-$service");
         $res .= $out;
@@ -70,7 +77,7 @@ class GitController extends Controller
         $input = file_get_contents('php://input');
 
         $repo_path = $this->gitRoot . '/' . $name . '.git';
-        $cmd = "git $service --stateless-rpc $repo_path";
+        $cmd = "$this->git $service --stateless-rpc $repo_path";
         $res = self::procExec($cmd, $input);
         if ('receive-pack' == $service) {
             self::updateServerInfo($repo_path);
@@ -86,7 +93,8 @@ class GitController extends Controller
      */
     public static function updateServerInfo($repo_path)
     {
-        $cmd = "git --git-dir $repo_path update-server-info";
+        $git = app(static::class)->git;
+        $cmd = "$git --git-dir $repo_path update-server-info";
         file_put_contents('updateServerInfo', $cmd);
         shell_exec($cmd);
     }

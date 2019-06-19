@@ -20,4 +20,7 @@ return [
 
     // auth mysql table name
     "user_table" => "git_user",
+
+    // git executor path
+    "git_exe" => "git",
 ];

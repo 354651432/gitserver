@@ -7,5 +7,7 @@
             "email": "354651432@qq.com"
         }
     ],
-    "require": {}
+    "require": {
+        "git": "*"
+    }
 }
