@@ -6,22 +6,38 @@ use Illuminate\Routing\Controller;
 
 class GitController extends Controller
 {
+    /**
+     * base path
+     * @var string
+     */
     private $gitRoot;
 
+    /**
+     * GitController constructor.
+     */
     public function __construct()
     {
         $this->gitRoot = config("git.basepath", storage_path("repos"));
     }
 
+    /**
+     * init a git repos
+     * @param $name
+     * @return bool|string
+     */
     public function init($name)
     {
-//        $name = request("name");
         $repo_path = $this->gitRoot . '/' . $name . ".git";
         $cmd = "git init --bare {$repo_path}";
 
         return self::procExec($cmd);
     }
 
+    /**
+     * proc get request from git
+     * @param $name
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function getInfoRefs($name)
     {
         $service = trim($_GET['service'], 'git-');
@@ -40,6 +56,12 @@ class GitController extends Controller
             ->header("Content-Type", "application/x-git-$service-advertisement");
     }
 
+    /**
+     * proc post request from git
+     * @param $name
+     * @param $service
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function command($name, $service)
     {
         $input = file_get_contents('php://input');
@@ -55,6 +77,10 @@ class GitController extends Controller
             ->header("Content-Type", "application/x-git-$service-result");
     }
 
+    /**
+     * when git push should update server info
+     * @param $repo_path
+     */
     public static function updateServerInfo($repo_path)
     {
         $cmd = "git --git-dir $repo_path update-server-info";
@@ -62,6 +88,10 @@ class GitController extends Controller
         shell_exec($cmd);
     }
 
+    /**
+     * @param $str
+     * @return string
+     */
     public static function packetWrite($str)
     {
         $len = dechex(strlen($str) + 4);
@@ -69,6 +99,12 @@ class GitController extends Controller
         return "{$len}{$str}0000";
     }
 
+    /**
+     * execute a git command
+     * @param $cmd
+     * @param null $input
+     * @return bool|string
+     */
     public static function procExec($cmd, $input = null)
     {
         $proc = proc_open($cmd, [['pipe', 'r'], ['pipe', 'w']], $pipes);

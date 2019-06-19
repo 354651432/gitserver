@@ -8,12 +8,33 @@ use Illuminate\Console\Command;
 
 class GitServerUserCommand extends Command
 {
+    /**
+     * @var string
+     */
     protected $signature = "git:user {action} {param?}";
 
+    /**
+     * @var string
+     */
     protected $description = "git authorized user manage";
 
-    protected $table = "";
+    /**
+     * @var string
+     */
+    protected $table = "git_user";
 
+    /**
+     * GitServerUserCommand constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->table = config("git.user_table", 'git_user');
+    }
+
+    /**
+     *
+     */
     public function handle()
     {
         $action = $this->argument("action");
@@ -32,10 +53,13 @@ STR
         );
     }
 
+    /**
+     * create authorized user table
+     */
     public function actionInit()
     {
         \DB::select(<<<SQL
-CREATE TABLE `git_user` (
+CREATE TABLE `{$this->table}` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
@@ -46,13 +70,19 @@ SQL
         $this->info("table created");
     }
 
+    /**
+     * get authorized user list
+     */
     public function actionList()
     {
-        $users = \DB::table("git_user")->select("id", "email")->get()->toArray();
+        $users = \DB::table($this->table)->select("id", "email")->get()->toArray();
         $users = array_map("get_object_vars", $users);
         $this->table(["id", "email"], $users);
     }
 
+    /**
+     * add authorized user
+     */
     public function actionAdd()
     {
         $param = $this->argument("param");
@@ -62,11 +92,11 @@ SQL
         }
         list($email, $password) = explode(":", $param);
 
-        if (\DB::table("git_user")->whereEmail($email)->exists()) {
+        if (\DB::table($this->table)->whereEmail($email)->exists()) {
             $this->info("user existed");
             return;
         }
-        \DB::table("git_user")->insert([
+        \DB::table($this->table)->insert([
             "email" => $email,
             "password" => password_hash($password, PASSWORD_DEFAULT),
         ]);
@@ -74,6 +104,9 @@ SQL
         $this->info("success");
     }
 
+    /**
+     * delete a user from authorized table
+     */
     public function actionDelete()
     {
         $param = $this->argument("param");
@@ -81,7 +114,7 @@ SQL
             $this->error("eg: git:user delete dual");
             return;
         }
-        \DB::table("git_user")->whereEmail($param)->delete();
+        \DB::table($this->table)->whereEmail($param)->delete();
 
         $this->info("success");
     }

@@ -10,6 +10,7 @@ class GitServerProvider extends ServiceProvider
      * Register services.
      *
      * @return void
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function register()
     {
@@ -42,7 +43,7 @@ class GitServerProvider extends ServiceProvider
         $providers = config("auth.providers");
         $providers["git"] = [
             'driver' => 'database',
-            'table' => 'git_user',
+            'table' => config("git.user_table", 'git_user'),
         ];
         config(["auth.providers" => $providers]);
     }
