@@ -11,7 +11,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Six\\GitServer\\": "packages/six/git-server/src/"
+            "Six\\GitServer\\": "src/"
         }
     },
     "extra": {
