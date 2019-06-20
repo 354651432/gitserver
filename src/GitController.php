@@ -95,7 +95,7 @@ class GitController extends Controller
     {
         $git = app(static::class)->git;
         $cmd = "$git --git-dir $repo_path update-server-info";
-        file_put_contents('updateServerInfo', $cmd);
+        // file_put_contents('updateServerInfo', $cmd);
         shell_exec($cmd);
     }
 
